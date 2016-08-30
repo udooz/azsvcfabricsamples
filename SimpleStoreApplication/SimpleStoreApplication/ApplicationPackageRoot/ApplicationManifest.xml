@@ -20,7 +20,12 @@
          The attribute ServiceTypeName below must match the name defined in the imported ServiceManifest.xml file. -->
     <Service Name="SimpleStoreService">
       <StatefulService ServiceTypeName="SimpleStoreServiceType" TargetReplicaSetSize="[SimpleStoreService_TargetReplicaSetSize]" MinReplicaSetSize="[SimpleStoreService_MinReplicaSetSize]">
-        <UniformInt64Partition PartitionCount="[SimpleStoreService_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+        <!--<UniformInt64Partition PartitionCount="[SimpleStoreService_PartitionCount]" LowKey="1" HighKey="4" />-->
+        <NamedPartition>
+          <Partition Name="Grocery" />
+          <Partition Name="Electronics" />
+          <Partition Name="Textiles" />
+        </NamedPartition>
       </StatefulService>
     </Service>
   </DefaultServices>

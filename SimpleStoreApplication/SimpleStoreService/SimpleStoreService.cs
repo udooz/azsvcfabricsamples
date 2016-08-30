@@ -24,6 +24,7 @@ namespace SimpleStoreService
 
         public async Task AddItem(ShoppingCartItem item)
         {
+            item.Description = $"Served from {this.Context.PartitionId} partition by {this.Context.NodeContext.NodeName} node";
             var cart = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, ShoppingCartItem>>("mycart");
             using (var tx = this.StateManager.CreateTransaction())
             {

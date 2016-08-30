@@ -12,5 +12,6 @@
                 return Amount * UnitPrice;
             }
         }
+        public string Description { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace SimpleStoreClient
     {
         static void Main(string[] args)
         {            
-            ServicePartitionKey pk = new ServicePartitionKey(9223372036854775807);            
+            ServicePartitionKey pk = new ServicePartitionKey("Electronics");            
 
             var simpleStoreClient = ServiceProxy.Create<IShoppingCartService>
                 (new Uri("fabric:/SimpleStoreApplication/SimpleStoreService"), pk);
@@ -29,7 +29,9 @@ namespace SimpleStoreClient
                 item.UnitPrice,
                 item.Amount,
                 item.LineTotal));
+                Console.WriteLine($"Description: {item.Description}");
             }
+            
             Console.ReadKey();
         }
     }
