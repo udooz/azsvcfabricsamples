@@ -8,3 +8,10 @@ This sample covers following topics
 * Stateful service
 * Partition
 * Replicas
+
+### ActorTicTacToeApplication
+
+This sample covers following topics
+
+* Actor pattern
+* Stateful and stateless actor
