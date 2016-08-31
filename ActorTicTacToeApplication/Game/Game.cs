@@ -19,46 +19,39 @@ namespace Game
     [StatePersistence(StatePersistence.Persisted)]
     internal class Game : Actor, IGame
     {
+        private ActorState state { get; set; }
 
         [ReadOnly(true)]
-        public async Task<int[]> GetGameBoardAsync()
-        {
-            var state = await this.StateManager.TryGetStateAsync<ActorState>("gamestate");
-            return state.Value.Board;
+        public Task<int[]> GetGameBoardAsync()
+        {            
+            return Task.FromResult(state.Board);
         }
 
         [ReadOnly(true)]
-        public async Task<string> GetWinnerAsync()
+        public Task<string> GetWinnerAsync()
         {
-            var state = await this.StateManager.TryGetStateAsync<ActorState>("gamestate");
-            return state.Value.Winner;
+            return Task.FromResult(state.Winner);
         }
 
-        public async Task<bool> JoinGameAsync(long playerId, string playerName)
+        public Task<bool> JoinGameAsync(long playerId, string playerName)
         {
-            var state = await this.StateManager.TryGetStateAsync<ActorState>("gamestate");            
-            var thisState = state.Value;
-            if (thisState.Players.Count >= 2 ||
-                thisState.Players.FirstOrDefault(p => p.Item2 == playerName) != null)
+            if (state.Players.Count >= 2 ||
+                state.Players.FirstOrDefault(p => p.Item2 == playerName) != null)
             {
-                return false;
+                return Task.FromResult(false);
             }
 
-            thisState.Players.Add(new Tuple<long, string>(playerId, playerName));
-            await this.StateManager.AddOrUpdateStateAsync<ActorState>("gamestate", thisState, (k, v) => thisState);
-            return true;
+            state.Players.Add(new Tuple<long, string>(playerId, playerName));            
+            return Task.FromResult(true); 
         }
 
-        public async Task<bool> MakeMoveAsync(long playerId, int x, int y)
+        public Task<bool> MakeMoveAsync(long playerId, int x, int y)
         {
-            var stateBox = await this.StateManager.TryGetStateAsync<ActorState>("gamestate");
-            var state = stateBox.Value;
-
             if (x < 0 || x > 2 || y < 0 || y > 2
                 || state.Players.Count != 2
                 || state.NumberOfMoves >= 9
                 || state.Winner != "")
-                return false;
+                return Task.FromResult(false); ;
             int index = state.Players.FindIndex(p => p.Item1 == playerId);
             if (index == state.NextPlayerIndex)
             {
@@ -67,23 +60,22 @@ namespace Game
                     int piece = index * 2 - 1;
                     state.Board[y * 3 + x] = piece;
                     state.NumberOfMoves++;
-                    if (HasWon(state, piece * 3))
+                    if (HasWon(piece * 3))
                         state.Winner = state.Players[index].Item2 + " (" +
                         (piece == -1 ? "X" : "O") + ")";
                     else if (state.Winner == "" && state.NumberOfMoves >= 9)
                         state.Winner = "TIE";
                     state.NextPlayerIndex = (state.NextPlayerIndex + 1) % 2;
-                    await this.StateManager.AddOrUpdateStateAsync<ActorState>("gamestate", state, (k, v) => state);
-                    return true;
+                    return Task.FromResult(true); 
                 }
                 else
-                    return false;
+                    return Task.FromResult(false); 
             }
             else
-                return false;
+                return Task.FromResult(false);
         }
 
-        private bool HasWon(ActorState state, int sum)
+        private bool HasWon(int sum)
         {
             return state.Board[0] + state.Board[1] + state.Board[2] == sum
             || state.Board[3] + state.Board[4] + state.Board[5] == sum
@@ -96,10 +88,9 @@ namespace Game
         }
 
 
-        protected async override Task OnActivateAsync()
-        {
-            var state = await this.StateManager.TryGetStateAsync<ActorState>("gamestate");
-            if(!state.HasValue)
+        protected override Task OnActivateAsync()
+        {            
+            if(state == null)
             {
                 var astate = new ActorState
                 {
@@ -109,9 +100,10 @@ namespace Game
                     NextPlayerIndex = 0,
                     NumberOfMoves = 0
                 };
-                await this.StateManager.AddOrUpdateStateAsync<ActorState>("gamestate", astate, (k, v) => astate);
+
+                this.state = astate;
             }
-            return; //this.StateManager.GetStateAsync<ActorState>("gamestate");
+            return Task.FromResult(true);
         }        
     }
 }
