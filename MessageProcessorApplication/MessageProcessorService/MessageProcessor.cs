@@ -11,16 +11,29 @@
     using System.Threading.Tasks;
     using Microsoft.ServiceBus.Messaging;
     using Newtonsoft.Json;
+    using Microsoft.WindowsAzure.Storage;
+    using Microsoft.WindowsAzure.Storage.Table;
 
     public class MessageProcessor : IEventProcessor
     {
-        IDictionary<string, int> map;
         PartitionContext partitionContext;
         Stopwatch checkpointStopWatch;
+        CloudStorageAccount storageAccount;
+        CloudTableClient tableClient;
+        CloudTable table;
 
         public MessageProcessor()
         {
-            this.map = new Dictionary<string, int>();
+            storageAccount = CloudStorageAccount.Parse("AccountName=uzevttable;AccountKey=8hGJNFB0TIWtJ4koumyv1ZAIaGxkP0OhGfHlMmaGIpVNvVQChs7z006jjbvbvETo24nThu88iQshFJJmp23jpg==;DefaultEndpointsProtocol=https");
+
+            // Create the table client.
+            tableClient = storageAccount.CreateCloudTableClient();
+
+            // Retrieve a reference to the table.
+            table = tableClient.GetTableReference("uzmessages");
+
+            // Create the table if it doesn't exist.
+            table.CreateIfNotExists();
         }
 
         public Task OpenAsync(PartitionContext context)
@@ -39,11 +52,20 @@
             {
                 foreach (EventData eventData in events)
                 {                    
+
                     var newData = this.DeserializeEventData(eventData);
                     string key = eventData.PartitionKey;
 
-                    ServiceEventSource.Current.Message(string.Format("Message received.  Partition: '{0}', Device: '{1}', Data: '{2}'",
-                        this.partitionContext.Lease.PartitionId, key, newData));
+                    var msgEntity = new MessageEntity(key);
+                    msgEntity.Message = newData;
+
+                    // Create the TableOperation object that inserts the customer entity.
+                    var insertOperation = TableOperation.Insert(msgEntity);
+
+                    // Execute the insert operation.
+                    table.Execute(insertOperation);
+
+                    ServiceEventSource.Current.Message(string.Format("Message received.  Partition: '{0}', Device: '{1}', Data: '{2}'",this.partitionContext.Lease.PartitionId, key, newData));
                 }
 
                 //Call checkpoint every 5 minutes, so that worker can resume processing from the 5 minutes back if it restarts.
@@ -73,5 +95,18 @@
             return JsonConvert.DeserializeObject<string>(Encoding.UTF8.GetString(eventData.GetBytes()));
         }
 
+    }
+
+    public class MessageEntity : TableEntity
+    {
+        public MessageEntity(string pk)
+        {
+            this.PartitionKey = pk;
+            this.RowKey = Guid.NewGuid().ToString();
+        }
+
+        public MessageEntity() { }
+
+        public string Message { get; set; }
     }
 }

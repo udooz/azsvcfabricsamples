@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.Configuration;
+    using System.Fabric;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
@@ -23,21 +24,24 @@
             this.eventHubName = eventHubName;
         }
 
-        public void MessageProcessingWithPartitionDistribution()
+        public void MessageProcessingWithPartitionDistribution(StatelessServiceContext fabricContext)
         {
+            var fabricNodeName = fabricContext.NodeContext.NodeName;
             EventHubClient eventHubClient = EventHubClient.CreateFromConnectionString(eventHubConnectionString, this.eventHubName);
 
             // Get the default Consumer Group 
             defaultConsumerGroup = eventHubClient.GetDefaultConsumerGroup();
             string blobConnectionString = ConfigurationManager.AppSettings["AzureStorageConnectionString"]; // Required for checkpoint/state 
-            eventProcessorHost = new EventProcessorHost("singleworker", eventHubClient.Path, defaultConsumerGroup.GroupName, this.eventHubConnectionString, blobConnectionString);
+            eventProcessorHost = new EventProcessorHost("Worker_" + fabricNodeName, eventHubClient.Path, defaultConsumerGroup.GroupName, this.eventHubConnectionString, blobConnectionString);
+            ServiceEventSource.Current.Message("MessageProcessor at " + fabricNodeName);
             var options = new EventProcessorOptions
             {
-                InitialOffsetProvider = (partitionId) => DateTime.UtcNow
+                InitialOffsetProvider = (partitionId) => DateTime.UtcNow,                
             };
             options.ExceptionReceived += (sender, e) => {
                 ServiceEventSource.Current.Message(e.Exception.Message);
             };
+
             eventProcessorHost.RegisterEventProcessorAsync<MessageProcessor>(options).Wait();
         }
 

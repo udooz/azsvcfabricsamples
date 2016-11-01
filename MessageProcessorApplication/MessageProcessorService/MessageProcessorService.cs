@@ -25,7 +25,7 @@ namespace MessageProcessorService
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
             var msgReceiver = new MessageReceiver("uzevents", "Endpoint=sb://uzehub.servicebus.windows.net/;SharedAccessKeyName=AllAccess;SharedAccessKey=Yf4t4XJQPD6fZn/xg36giRrAjPYr4xk8YnflbwEB+nk=");
-            msgReceiver.MessageProcessingWithPartitionDistribution();
+            msgReceiver.MessageProcessingWithPartitionDistribution(this.Context);
 
             return new ServiceInstanceListener[0];
         }
