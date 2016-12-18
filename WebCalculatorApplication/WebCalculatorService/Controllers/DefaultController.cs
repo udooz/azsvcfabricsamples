@@ -12,6 +12,7 @@ namespace WebCalculatorService.Controllers
         [HttpGet]
         public int Add(int a, int b)
         {
+            ServiceEventSource.Current.Message($"{a} + {b}");
             return a + b;
         }
     }

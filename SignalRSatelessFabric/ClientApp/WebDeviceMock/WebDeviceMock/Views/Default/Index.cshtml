@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewBag.Title = "Hello Index";
+    
+}
+
+<h2>Hello</h2>
+<p class="bg-primary" id="signalmsg">This is the place Signal R Message will come.  
+    Device Id: @ViewBag.did </p>
+<p class="bg-info" id="signallog">Signal Console</p>
+
+
+<script type="text/javascript">
+    $.support.cors = true;
+    $("#signalmsg").text("Init");
+    var connection = $.connection('http://localhost:9191/echo?deviceId=@ViewBag.did');
+    connection.received(function (data) {
+        $("#signalmsg").text(data);
+        console.log(data);
+    });
+    connection.error(function (error) {
+        $("#signallog").toggleClass('bg-danger');
+        $("#signallog").text(error);
+        console.warn(error);
+    });
+    connection.stateChanged(function (change) {
+        if (change.newState === $.signalR.connectionState.reconnecting) {
+            $("#signallog").toggleClass('bg-warning');
+            $("#signallog").text('Re-connecting');
+            console.log('Re-connecting');
+        }
+        else if (change.newState === $.signalR.connectionState.connected) {
+            $("#signallog").toggleClass('bg-success');
+            $("#signallog").text('Connected');
+            console.log('The server is online');
+        }
+    });
+    connection.reconnected(function () {
+        $("#signallog").toggleClass('bg-warning');
+        $("#signallog").text('Connected');
+        console.log('Reconnected');
+    });
+    
+    connection.start({ transport: ['webSockets', 'longPolling'], waitForPageLoad: true, xdomain: true });
+</script>

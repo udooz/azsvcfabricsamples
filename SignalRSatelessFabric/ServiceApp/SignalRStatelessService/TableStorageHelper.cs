@@ -49,7 +49,7 @@ namespace SignalRStatelessService
 
         public CloudTable GetTable()
         {
-            string staccount = "DefaultEndpointsProtocol=https;AccountName=lbasudooz;AccountKey=rvqO/G54g+oYy+G0O2FxfdtM1k4ly9LVJhsg81LUaQgVlGvpgDWsrUrjJbaHtcuKOQCOckt7NceDJoiOrIRlJA==";
+            string staccount = "DefaultEndpointsProtocol=https;AccountName=shksignalstore;AccountKey=HGHiGEIYHRU1o0OEdk8zPiMX9TRY4octJorg4y2BE366UxSxa6f7Owu59sUSjTQpFf6wpmTEBhitkAszLKO+BA==";
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(staccount);
 
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();

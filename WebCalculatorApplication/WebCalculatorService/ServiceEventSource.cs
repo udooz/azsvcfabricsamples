@@ -9,7 +9,7 @@ using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace WebCalculatorService
 {
-    [EventSource(Name = "MyCompany-WebCalculatorApplication-WebCalculatorService")]
+    [EventSource(Name = "Udooz-WebCalculatorApplication-WebCalculatorService")]
     internal sealed class ServiceEventSource : EventSource
     {
         public static readonly ServiceEventSource Current = new ServiceEventSource();

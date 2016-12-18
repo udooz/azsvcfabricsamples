@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Owin;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using Microsoft.AspNet.SignalR;
 using SignalRStatelessService.SignalR;
+using Microsoft.Owin.Cors;
 
 namespace SignalRStatelessService
 {
@@ -20,13 +22,14 @@ namespace SignalRStatelessService
             RouteConfig.RegisterRoutes(config.Routes);
             appBuilder.UseWebApi(config);
 
-            string connectionString = "Endpoint=sb://lbassignalr.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=piW0e6ugFBdZXXiJ/zZX6GSeSyVt8IiNRlpJxDMYwEg=";
+            string connectionString = "Endpoint=sb://shksignal1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=0++up2RtkmYCP22Ywj9fVm1yG1yGjpdsQT30tXKA74s=";
             GlobalHost.DependencyResolver.UseServiceBus(connectionString, "signalrr");
+            //appBuilder.UseCors(CorsOptions.AllowAll);
             appBuilder.MapSignalR<MyEndPoint>("/echo");
-
-            //appBuilder.MapSignalR();
-
-
+            //appBuilder.MapSignalR<MyEndPoint>("/echo", new ConnectionConfiguration
+            //{
+            //    EnableJSONP = false
+            //}).RunSignalR();
         }
     }
 }

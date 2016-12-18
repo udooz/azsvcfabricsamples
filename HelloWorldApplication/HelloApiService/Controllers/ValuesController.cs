@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Web.Http;
 
 namespace HelloApiService.Controllers
@@ -8,7 +9,8 @@ namespace HelloApiService.Controllers
         // GET api/values 
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            var cm = ConfigurationManager.AppSettings["CGreet"];
+            return new string[] { cm, "value2" };
         }
 
         // GET api/values/5 
