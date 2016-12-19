@@ -14,9 +14,7 @@ namespace DeviceMock
             string deviceID = (args.Count() > 0) ? args[0] : "device1";
 
             
-            var connection = new Connection("http://localhost:9191/echo", "deviceId=" + deviceID);
-
-            //var connection = new Connection("http://10.1.167.72:9090/notifyserviceFabric", "deviceId=" + deviceID);
+            var connection = new Connection("http://localhost:8401/echo", "deviceId=" + deviceID);
 
             connection.Start().Wait();
 

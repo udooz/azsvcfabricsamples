@@ -23,13 +23,12 @@ namespace SignalRStatelessService
             appBuilder.UseWebApi(config);
 
             string connectionString = "Endpoint=sb://shksignal1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=0++up2RtkmYCP22Ywj9fVm1yG1yGjpdsQT30tXKA74s=";
-            GlobalHost.DependencyResolver.UseServiceBus(connectionString, "signalrr");
-            //appBuilder.UseCors(CorsOptions.AllowAll);
-            appBuilder.MapSignalR<MyEndPoint>("/echo");
-            //appBuilder.MapSignalR<MyEndPoint>("/echo", new ConnectionConfiguration
-            //{
-            //    EnableJSONP = false
-            //}).RunSignalR();
+            GlobalHost.DependencyResolver.UseServiceBus(connectionString, "shksignal");
+            appBuilder.UseCors(CorsOptions.AllowAll);
+            appBuilder.Map("/echo", map =>
+            {  
+                map.UseCors(CorsOptions.AllowAll).RunSignalR<MyEndPoint>();
+            });
         }
     }
 }

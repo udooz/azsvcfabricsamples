@@ -22,9 +22,9 @@ namespace BackendService
             Console.WriteLine(deviceID);
 
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:9191");
+            client.BaseAddress = new Uri("http://localhost:8401");
 
-            var res = client.GetStringAsync($"api/send?deviceId={deviceID}&message={message}").Result;
+            var res = client.GetStringAsync($"api/values/send?deviceId={deviceID}&message={message}").Result;
             Console.WriteLine(res);
         }
 

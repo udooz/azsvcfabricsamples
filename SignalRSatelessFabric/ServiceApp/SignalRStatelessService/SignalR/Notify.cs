@@ -17,8 +17,11 @@ namespace SignalRStatelessService.SignalR
 
             TableStorageHelper tableStorage = new TableStorageHelper();
             var devEntity = tableStorage.Get("device", deviceID);
-            string connID =  devEntity.ConnectionID;
-            context.Connection.Send(connID, message);
+            if (devEntity != null)
+            {
+                string connID = devEntity.ConnectionID;
+                context.Connection.Send(connID, message);
+            }
             //context.Connection.Broadcast(message);
 
         }
