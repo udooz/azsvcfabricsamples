@@ -10,19 +10,19 @@ namespace WebCalculatorService.Controllers
 {
     public class DefaultController : ApiController
     {
-        [HttpGet]
-        public int Add(int a, int b)
-        {
-            return a + b;
-        }
+            [HttpGet]
+            public int Add(int a, int b)
+            {
+                return a + b;
+            }
 
-        [HttpGet]
-        // POST api/values 
-        public string Send(string message, string deviceId)
-        {            
-            Notifier notify = new Notifier();
-            notify.Notify(deviceId, message);
-            return "done";
-        }
+            [HttpGet]
+            // POST api/values 
+            public string Send(string message, string deviceId)
+            {            
+                Notifier notify = new Notifier();
+                notify.Notify(deviceId, message);
+                return "done";
+            }
     }
 }
