@@ -7,6 +7,7 @@ using Microsoft.ServiceFabric.Actors;
 using Microsoft.ServiceFabric.Actors.Runtime;
 using Microsoft.ServiceFabric.Actors.Client;
 using Masha.Quote.Interfaces;
+using Microsoft.ApplicationInsights;
 
 namespace Masha.Quote
 {
@@ -21,6 +22,9 @@ namespace Masha.Quote
     [StatePersistence(StatePersistence.Persisted)]
     internal class Quote : Actor, IQuote
     {
+        private TelemetryClient tclient = new TelemetryClient(new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration("d213c5f7-d154-4ccf-8dd4-726cf2023a5a"));
+        private Random rnd = new Random(10000);
+
         /// <summary>
         /// Initializes a new instance of Quote
         /// </summary>
@@ -32,9 +36,11 @@ namespace Masha.Quote
         }
 
         public Task<double> GetQuote(string sku)
-        {
-            var rnd = new Random(1000);
-            return Task.FromResult(rnd.NextDouble());
+        {                        
+            var nextValue = rnd.Next(100, 10000);
+            tclient.TrackEvent("Sales.Quote.Engine");            
+            tclient.TrackMetric("QuoteEngine", nextValue, new Dictionary<string, string> { { "SKU", sku } });
+            return Task.FromResult((double)nextValue);
         }
 
         /// <summary>

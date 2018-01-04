@@ -6,11 +6,11 @@
         <Extension Name="__GeneratedServiceType__" GeneratedId="fd0cf23f-9ab9-4e1e-bc2a-cf1d96be9267|Persisted">
           <GeneratedNames xmlns="http://schemas.microsoft.com/2015/03/fabact-no-schema">
             <DefaultService Name="QuoteActorService" />
-            <ServiceEndpoint Name="QuoteActorServiceEndpoint" />
             <ReplicatorEndpoint Name="QuoteActorServiceReplicatorEndpoint" />
             <ReplicatorConfigSection Name="QuoteActorServiceReplicatorConfig" />
             <ReplicatorSecurityConfigSection Name="QuoteActorServiceReplicatorSecurityConfig" />
             <StoreConfigSection Name="QuoteActorServiceLocalStoreConfig" />
+            <ServiceEndpoint Name="QuoteActorServiceEndpoint" />
           </GeneratedNames>
         </Extension>
       </Extensions>

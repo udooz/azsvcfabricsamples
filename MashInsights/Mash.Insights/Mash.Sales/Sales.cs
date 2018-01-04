@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
+using Microsoft.ApplicationInsights.ServiceFabric;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace Mash.Sales
 {
@@ -28,6 +30,8 @@ namespace Mash.Sales
         /// <returns>The collection of listeners.</returns>
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
+            FabricTelemetryInitializerExtension.SetServiceCallContext(this.Context);
+
             return new ServiceInstanceListener[]
             {
                 new ServiceInstanceListener(serviceContext =>
@@ -39,9 +43,10 @@ namespace Mash.Sales
                                     .UseKestrel()
                                     .ConfigureServices(
                                         services => services
-                                            .AddSingleton<StatelessServiceContext>(serviceContext))
+                                            .AddSingleton<StatelessServiceContext>(serviceContext)
+                                            .AddSingleton<ITelemetryInitializer>(serviceProvider => FabricTelemetryInitializerExtension.CreateFabricTelemetryInitializer(serviceContext)))
                                     .UseContentRoot(Directory.GetCurrentDirectory())
-                                    .UseStartup<Startup>()
+                                    .UseStartup<Startup>()                                       
                                     .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
                                     .UseUrls(url)
                                     .Build();
